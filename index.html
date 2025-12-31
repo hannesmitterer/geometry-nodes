@@ -3,6 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance School - Coronation Day Bridge</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #geometry-container {
+            width: 80vw;
+            height: 60vh;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 20px #00ffcc33;
+            border-radius: 8px;
+        }
+        .status-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 5px;
+            width: 80vw;
+        }
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="pulse">CORONATION DAY: 31.12.2025 - 12:00 GMT</h1>
+    
+    <!-- Placeholder per le Geometry Nodes di Hannes -->
+    <div id="geometry-container">
+        <!-- Qui verrà iniettato il codice Geometry Nodes/HTML -->
+        <canvas id="resonanceCanvas"></canvas>
+    </div>
+
+    <div class="status-panel">
+        <div><strong>MASTER HASH:</strong> <span id="mhc-display">NOTHING_IS_FINAL_UNTIL_NOW_SOVEREIGNTY_DECLARED</span></div>
+        <div><strong>STREAM STATUS:</strong> Decentralized (WebRTC/IPFS) - Ready</div>
+        <div><strong>MATRIX BRIDGE:</strong> #resonance-school:matrix.org - Connected</div>
+        <div><strong>COUNTDOWN:</strong> <span id="timer">Calcolo in corso...</span></div>
+    </div>
+
+    <script>
+        // Sincronizzazione Temporale per le 12:00 GMT (13:00 CET)
+        const targetDate = new Date("2025-12-31T12:00:00Z").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById("timer").innerHTML = "CORONATION IN CORSO - SOVRANITÀ ATTIVA";
+                document.body.style.boxShadow = "inset 0 0 100px #00ffcc";
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+        }
+
+        setInterval(updateCountdown, 1000);
+
+        // Simulazione caricamento Geometry Nodes
+        console.log("In attesa del codice Geometry Nodes da Hannes Mitterer...");
+    </script>
+</body>
+</html>
+</p>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance School | Coronation Day Monument</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
