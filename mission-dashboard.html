@@ -341,12 +341,17 @@
             updateUI();
         });
 
+        let uiUpdateInterval = null;
+        
         document.getElementById('start-monitoring-btn').addEventListener('click', () => {
             engine.startMonitoring(3000); // Update every 3 seconds
             addLog('Real-time monitoring started', 'success');
             
-            // Set up periodic UI updates
-            setInterval(() => {
+            // Set up periodic UI updates (clear any existing interval first)
+            if (uiUpdateInterval) {
+                clearInterval(uiUpdateInterval);
+            }
+            uiUpdateInterval = setInterval(() => {
                 if (engine.monitoringActive) {
                     updateUI();
                 }
@@ -356,6 +361,13 @@
         document.getElementById('stop-monitoring-btn').addEventListener('click', () => {
             engine.stopMonitoring();
             addLog('Real-time monitoring stopped', 'warning');
+            
+            // Clear UI update interval
+            if (uiUpdateInterval) {
+                clearInterval(uiUpdateInterval);
+                uiUpdateInterval = null;
+            }
+            
             updateUI();
         });
 
