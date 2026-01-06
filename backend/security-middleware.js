@@ -10,7 +10,13 @@ const Joi = require('joi');
 const rateLimit = require('express-rate-limit');
 
 // JWT Secret (should be in environment variable in production)
-const JWT_SECRET = process.env.JWT_SECRET || 'resonance-school-dev-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || (() => {
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('JWT_SECRET environment variable must be set in production');
+    }
+    // Development fallback: 64-character random string
+    return 'dev-secret-4e8a9f2c7b6d5a3e1f9c8b7a6d5c4e3f2a1b9c8d7e6f5a4b3c2d1e9f8a7b6c5d4e3f2a1';
+})();
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
 // ==================== JWT Authentication ====================

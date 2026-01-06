@@ -7,7 +7,7 @@
   },
   "security": {
     "jwt": {
-      "secret": "your-secret-key-change-in-production",
+      "secret": "your-secret-key-change-in-production-must-be-at-least-64-characters-long-use-high-entropy-random-string",
       "expiresIn": "1h"
     },
     "cors": {

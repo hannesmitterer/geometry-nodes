@@ -22,7 +22,9 @@ const configSchema = Joi.object({
     
     security: Joi.object({
         jwt: Joi.object({
-            secret: Joi.string().min(32).required(),
+            secret: Joi.string().min(64).required().messages({
+                'string.min': 'JWT secret must be at least 64 characters for security (HMAC-SHA256 best practice)'
+            }),
             expiresIn: Joi.string().required()
         }).required(),
         cors: Joi.object({

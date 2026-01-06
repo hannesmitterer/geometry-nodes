@@ -15,7 +15,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - WS_PORT=3001
-      - JWT_SECRET=${JWT_SECRET:-change-this-secret-in-production}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET environment variable must be set - generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-1h}
     networks:
       - resonance-network
