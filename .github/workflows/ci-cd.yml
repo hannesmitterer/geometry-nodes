@@ -34,6 +34,7 @@ jobs:
       - name: Start backend server
         run: |
           npm run backend &
+          echo $! > backend.pid
           sleep 5
       
       - name: Run API tests
@@ -43,7 +44,11 @@ jobs:
         run: npm run test:websocket
       
       - name: Stop backend server
-        run: pkill -f "node backend/server.js" || true
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi
 
   # Security Scanning
   security:
@@ -190,10 +195,15 @@ jobs:
       - name: Start backend server
         run: |
           npm run backend &
+          echo $! > backend.pid
           sleep 5
       
       - name: Run performance tests
         run: npm run test:performance || true
       
       - name: Stop backend server
-        run: pkill -f "node backend/server.js" || true
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi

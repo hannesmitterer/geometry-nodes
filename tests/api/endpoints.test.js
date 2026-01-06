@@ -192,7 +192,7 @@ async function runTests() {
     await test('POST /api/auth/login rejects invalid credentials', async () => {
         const credentials = {
             username: 'admin',
-            password: 'wrongpassword123'  // Valid length, but wrong password
+            password: 'invalid_password'
         };
         
         const res = await request('POST', '/api/auth/login', credentials);

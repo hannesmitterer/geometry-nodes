@@ -368,10 +368,15 @@ app.listen(PORT, () => {
     console.log(`  GET  http://localhost:${PORT}/api/auth/verify`);
     console.log(`  GET  http://localhost:${PORT}/health`);
     console.log('');
-    console.log('Demo credentials:');
-    console.log('  Admin: username=admin, password=resonance2025');
-    console.log('  Viewer: username=viewer, password=viewer2025');
-    console.log('');
+    
+    // Only show demo credentials in development
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('Demo credentials:');
+        console.log('  Admin: username=admin, password=resonance2025');
+        console.log('  Viewer: username=viewer, password=viewer2025');
+        console.log('');
+    }
+    
     console.log(`WebSocket: ws://localhost:${WS_PORT}`);
     console.log('='.repeat(60));
 });
