@@ -1,0 +1,31 @@
+{
+  "name": "resonance-school-live-terminal",
+  "version": "1.0.0",
+  "description": "Live Monitor Terminal for Resonance School - Decentralized sovereign application",
+  "main": "index.html",
+  "scripts": {
+    "ipfs:add": "ipfs add -r . --ignore .git --ignore node_modules --ignore .gitignore",
+    "ipfs:pin": "ipfs pin add",
+    "serve": "python3 -m http.server 8080",
+    "build": "echo 'No build step required - static assets only'"
+  },
+  "keywords": [
+    "ipfs",
+    "decentralized",
+    "sovereignty",
+    "resonance-school",
+    "live-monitor"
+  ],
+  "author": "Resonance School",
+  "license": "MIT",
+  "ipfs": {
+    "gateway": "https://ipfs.io/ipfs/",
+    "pinning": {
+      "enabled": true,
+      "services": [
+        "pinata",
+        "infura"
+      ]
+    }
+  }
+}

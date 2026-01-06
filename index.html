@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance School - Coronation Day Bridge</title>
+    <link rel="manifest" href="/manifest.json">
     <style>
         body {
             background-color: #050505;
@@ -53,9 +54,19 @@
 
     <div class="status-panel">
         <div><strong>MASTER HASH:</strong> <span id="mhc-display">NOTHING_IS_FINAL_UNTIL_NOW_SOVEREIGNTY_DECLARED</span></div>
-        <div><strong>STREAM STATUS:</strong> Decentralized (WebRTC/IPFS) - Ready</div>
+        <div><strong>STREAM STATUS:</strong> Decentralized (WebRTC/IPFS) - <span id="connection-status" style="color: #ffa500;">Connecting...</span></div>
         <div><strong>MATRIX BRIDGE:</strong> #resonance-school:matrix.org - Connected</div>
         <div><strong>COUNTDOWN:</strong> <span id="timer">Calcolo in corso...</span></div>
+        <div><strong>OVERRIDE STATUS:</strong> <span id="override-status">LOADING...</span></div>
+        <div><strong>CONSENSUS:</strong> <span id="consensus-display">--</span></div>
+    </div>
+    
+    <!-- Live Logs Display -->
+    <div style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.8); border-radius: 5px; width: 80vw; max-height: 200px; overflow-y: auto;">
+        <strong style="color: #00ffcc;">LIVE SYSTEM LOGS:</strong>
+        <div id="log-container" style="margin-top: 10px;">
+            <!-- Logs will be inserted here dynamically -->
+        </div>
     </div>
 
     <script>
@@ -84,6 +95,12 @@
         // Simulazione caricamento Geometry Nodes
         console.log("In attesa del codice Geometry Nodes da Hannes Mitterer...");
     </script>
+    
+    <!-- Load service modules -->
+    <script src="/api-service.js"></script>
+    <script src="/logger-service.js"></script>
+    <script src="/notification-service.js"></script>
+    <script src="/live-terminal.js"></script>
 </body>
 </html>
 </p>
