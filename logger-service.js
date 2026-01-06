@@ -26,35 +26,35 @@ class LoggerService {
      * Log debug message
      */
     debug(message, context = {}) {
-        this.log('DEBUG', message, context);
+        return this.log('DEBUG', message, context);
     }
 
     /**
      * Log info message
      */
     info(message, context = {}) {
-        this.log('INFO', message, context);
+        return this.log('INFO', message, context);
     }
 
     /**
      * Log warning message
      */
     warn(message, context = {}) {
-        this.log('WARN', message, context);
+        return this.log('WARN', message, context);
     }
 
     /**
      * Log error message
      */
     error(message, context = {}) {
-        this.log('ERROR', message, context);
+        return this.log('ERROR', message, context);
     }
 
     /**
      * Log critical message
      */
     critical(message, context = {}) {
-        this.log('CRITICAL', message, context);
+        return this.log('CRITICAL', message, context);
     }
 
     /**

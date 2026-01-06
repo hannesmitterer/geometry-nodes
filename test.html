@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Terminal Test Page</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #0f0;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        .test-result.fail {
+            border-color: #f00;
+            color: #f00;
+            background: rgba(255, 0, 0, 0.1);
+        }
+        .test-result.pass {
+            border-color: #0f0;
+            color: #0f0;
+        }
+        #test-output {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #0f0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Terminal Integration Test</h1>
+    <div id="test-results"></div>
+    <div id="test-output">
+        <p>Test output will appear here...</p>
+    </div>
+
+    <script src="/api-service.js"></script>
+    <script src="/logger-service.js"></script>
+    <script src="/notification-service.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('test-results');
+        const outputDiv = document.getElementById('test-output');
+        
+        function log(message) {
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            outputDiv.appendChild(p);
+        }
+
+        function addResult(name, passed, message) {
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `<strong>${passed ? '✓' : '✗'} ${name}</strong><br>${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        async function runTests() {
+            log('Starting tests...');
+
+            // Test 1: APIService initialization
+            try {
+                const apiService = new APIService({
+                    baseURL: 'https://api.resonance.school',
+                    wsURL: 'wss://api.resonance.school/ws'
+                });
+                addResult('APIService', apiService !== null, 'APIService initialized successfully');
+                log('✓ APIService created');
+
+                // Test mock data
+                const mockSovereignty = apiService.getMockSovereigntyData();
+                addResult('Mock Sovereignty Data', 
+                    mockSovereignty.masterHash === 'RS-CORONATION-31122025-HM-PROV',
+                    `Master Hash: ${mockSovereignty.masterHash}`
+                );
+                log('✓ Mock sovereignty data retrieved');
+
+            } catch (error) {
+                addResult('APIService', false, error.message);
+                log('✗ APIService failed: ' + error.message);
+            }
+
+            // Test 2: LoggerService initialization
+            try {
+                const apiService = new APIService();
+                const logger = new LoggerService(apiService);
+                addResult('LoggerService', logger !== null, 'LoggerService initialized successfully');
+                log('✓ LoggerService created');
+
+                // Test logging
+                logger.info('Test log message');
+                const recentLogs = logger.getRecentLogs(1);
+                addResult('Logger Messages', 
+                    recentLogs.length > 0 && recentLogs[0].message === 'Test log message',
+                    `Log count: ${recentLogs.length}`
+                );
+                log('✓ Logger message created');
+
+            } catch (error) {
+                addResult('LoggerService', false, error.message);
+                log('✗ LoggerService failed: ' + error.message);
+            }
+
+            // Test 3: NotificationService initialization
+            try {
+                const apiService = new APIService();
+                const logger = new LoggerService(apiService);
+                const notificationService = new NotificationService(logger);
+                addResult('NotificationService', 
+                    notificationService !== null, 
+                    'NotificationService initialized successfully'
+                );
+                log('✓ NotificationService created');
+
+                // Test countdown trigger
+                const future = Date.now() + 2000; // 2 seconds from now
+                let triggered = false;
+                notificationService.registerCountdownTrigger(
+                    'test-trigger',
+                    future,
+                    () => { triggered = true; }
+                );
+                
+                setTimeout(() => {
+                    addResult('Countdown Trigger', 
+                        triggered, 
+                        'Trigger executed after timeout'
+                    );
+                    log(triggered ? '✓ Trigger executed' : '✗ Trigger failed');
+                }, 3000);
+
+            } catch (error) {
+                addResult('NotificationService', false, error.message);
+                log('✗ NotificationService failed: ' + error.message);
+            }
+
+            // Test 4: Service integration
+            try {
+                const apiService = new APIService();
+                const logger = new LoggerService(apiService);
+                const notificationService = new NotificationService(logger);
+
+                // Test event listening
+                let eventReceived = false;
+                apiService.on('test-event', (data) => {
+                    eventReceived = true;
+                });
+                apiService.emit('test-event', { test: true });
+
+                addResult('Event System', 
+                    eventReceived, 
+                    'Event emitter/listener working correctly'
+                );
+                log(eventReceived ? '✓ Event system working' : '✗ Event system failed');
+
+            } catch (error) {
+                addResult('Service Integration', false, error.message);
+                log('✗ Integration failed: ' + error.message);
+            }
+
+            // Test 5: Local Storage
+            try {
+                const apiService = new APIService();
+                const nodeId = apiService.getNodeId();
+                const storedId = localStorage.getItem('nodeId');
+                
+                addResult('Node ID Persistence', 
+                    nodeId === storedId && nodeId !== null,
+                    `Node ID: ${nodeId}`
+                );
+                log(`✓ Node ID persisted: ${nodeId}`);
+
+            } catch (error) {
+                addResult('Local Storage', false, error.message);
+                log('✗ Local storage failed: ' + error.message);
+            }
+
+            log('All tests completed!');
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
