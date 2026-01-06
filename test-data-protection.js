@@ -827,7 +827,7 @@ class DataProtectionTestSuite {
         return {
             implemented: true,
             epsilon: 0.5,
-            noiselevel: 'appropriate'
+            noiseLevel: 'appropriate'
         };
     }
 
