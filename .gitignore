@@ -1,0 +1,23 @@
+# Node modules (if added in future)
+node_modules/
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.min.js
+*.min.css
+
+# Keep test results for tracking
+# test-results/ - intentionally not ignored, we want to track reports
