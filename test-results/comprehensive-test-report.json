@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-01-06T00:54:03.919Z",
+  "timestamp": "2026-01-06T00:56:20.585Z",
   "targetDeploymentDate": "2026-01-10",
-  "duration": 20,
+  "duration": 22,
   "overallStatus": "READY",
   "summary": {
     "totalTests": 119,
@@ -54,7 +54,7 @@
   ],
   "detailedResults": {
     "governance": {
-      "timestamp": "2026-01-06T00:54:03.909Z",
+      "timestamp": "2026-01-06T00:56:20.572Z",
       "duration": 3,
       "summary": {
         "totalSuites": 7,
@@ -255,7 +255,7 @@
       }
     },
     "accessibility": {
-      "timestamp": "2026-01-06T00:54:03.913Z",
+      "timestamp": "2026-01-06T00:56:20.578Z",
       "duration": 3,
       "summary": {
         "totalSuites": 9,
@@ -582,8 +582,8 @@
       }
     },
     "dataProtection": {
-      "timestamp": "2026-01-06T00:54:03.919Z",
-      "duration": 3,
+      "timestamp": "2026-01-06T00:56:20.584Z",
+      "duration": 5,
       "summary": {
         "totalSuites": 9,
         "totalTests": 49,
@@ -971,7 +971,7 @@
       }
     },
     "syntheia": {
-      "timestamp": "2026-01-06T00:54:03.919Z",
+      "timestamp": "2026-01-06T00:56:20.585Z",
       "summary": {
         "totalTests": 10,
         "passed": 10,
