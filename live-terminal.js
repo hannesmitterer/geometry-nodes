@@ -221,11 +221,24 @@ class LiveTerminal {
             CRITICAL: '#ff0000'
         };
 
-        logEntry.innerHTML = `
-            <span style="color: #666">[${timestamp}]</span>
-            <span style="color: ${levelColor[log.level] || '#00ffcc'}">[${log.level || 'INFO'}]</span>
-            <span style="color: #ccc">${log.message}</span>
-        `;
+        // Create spans safely without innerHTML
+        const timestampSpan = document.createElement('span');
+        timestampSpan.style.color = '#666';
+        timestampSpan.textContent = `[${timestamp}]`;
+        
+        const levelSpan = document.createElement('span');
+        levelSpan.style.color = levelColor[log.level] || '#00ffcc';
+        levelSpan.textContent = `[${log.level || 'INFO'}]`;
+        
+        const messageSpan = document.createElement('span');
+        messageSpan.style.color = '#ccc';
+        messageSpan.textContent = log.message;
+
+        logEntry.appendChild(timestampSpan);
+        logEntry.appendChild(document.createTextNode(' '));
+        logEntry.appendChild(levelSpan);
+        logEntry.appendChild(document.createTextNode(' '));
+        logEntry.appendChild(messageSpan);
 
         logContainer.insertBefore(logEntry, logContainer.firstChild);
 

@@ -138,15 +138,25 @@ class NotificationService {
             animation: slideIn 0.3s ease-out;
         `;
 
-        element.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 5px; color: ${colors[notification.type] || colors.info}">
-                ${notification.title}
-            </div>
-            ${notification.body ? `<div style="font-size: 0.9em; opacity: 0.9">${notification.body}</div>` : ''}
-            <div style="font-size: 0.7em; opacity: 0.6; margin-top: 5px">
-                ${new Date(notification.timestamp).toLocaleTimeString()}
-            </div>
-        `;
+        // Create title element
+        const titleDiv = document.createElement('div');
+        titleDiv.style.cssText = `font-weight: bold; margin-bottom: 5px; color: ${colors[notification.type] || colors.info}`;
+        titleDiv.textContent = notification.title;
+        element.appendChild(titleDiv);
+
+        // Create body element if present
+        if (notification.body) {
+            const bodyDiv = document.createElement('div');
+            bodyDiv.style.cssText = 'font-size: 0.9em; opacity: 0.9';
+            bodyDiv.textContent = notification.body;
+            element.appendChild(bodyDiv);
+        }
+
+        // Create timestamp element
+        const timestampDiv = document.createElement('div');
+        timestampDiv.style.cssText = 'font-size: 0.7em; opacity: 0.6; margin-top: 5px';
+        timestampDiv.textContent = new Date(notification.timestamp).toLocaleTimeString();
+        element.appendChild(timestampDiv);
 
         return element;
     }

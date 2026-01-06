@@ -196,7 +196,7 @@ class LoggerService {
     getSessionId() {
         let sessionId = sessionStorage.getItem('sessionId');
         if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
             sessionStorage.setItem('sessionId', sessionId);
         }
         return sessionId;

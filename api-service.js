@@ -227,7 +227,7 @@ class APIService {
     getNodeId() {
         let nodeId = localStorage.getItem('nodeId');
         if (!nodeId) {
-            nodeId = 'node_' + Math.random().toString(36).substr(2, 9);
+            nodeId = 'node_' + Math.random().toString(36).substring(2, 11);
             localStorage.setItem('nodeId', nodeId);
         }
         return nodeId;
