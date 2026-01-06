@@ -11,6 +11,7 @@
  * 2. Accessibility Testing (DECLARATION_WORLD.md compliance)
  * 3. Data Protection Testing (PERSONAL_PROTECTION.md compliance)
  * 4. SYNTHEIA System Integration
+ * 5. Triple Anchorage & Kosymbiosis Validation
  */
 
 const fs = require('fs');
@@ -24,7 +25,8 @@ class TestOrchestrator {
             governance: null,
             accessibility: null,
             dataProtection: null,
-            syntheia: null
+            syntheia: null,
+            tripleAnchorage: null
         };
         this.overallStatus = 'PENDING';
     }
@@ -173,6 +175,30 @@ class TestOrchestrator {
     }
 
     /**
+     * Run Triple Anchorage & Kosymbiosis Tests
+     */
+    runTripleAnchorageTests() {
+        this.printSection('PHASE 5: TRIPLE ANCHORAGE & KOSYMBIOSIS VALIDATION');
+        this.log('Starting Triple Anchorage & Kosymbiosis Validation...', 'INFO');
+
+        try {
+            const TripleAnchorageValidator = require('./test-triple-anchorage.js');
+            const validator = new TripleAnchorageValidator();
+            this.results.tripleAnchorage = validator.runAllTests();
+            
+            this.log('✓ Triple Anchorage & Kosymbiosis validation completed', 'SUCCESS');
+            return true;
+        } catch (error) {
+            this.log(`✗ Triple Anchorage tests failed: ${error.message}`, 'ERROR');
+            this.results.tripleAnchorage = {
+                error: error.message,
+                status: 'FAILED'
+            };
+            return false;
+        }
+    }
+
+    /**
      * Generate comprehensive final report
      */
     generateFinalReport() {
@@ -185,19 +211,22 @@ class TestOrchestrator {
             (this.results.governance?.summary?.totalTests || 0) +
             (this.results.accessibility?.summary?.totalTests || 0) +
             (this.results.dataProtection?.summary?.totalTests || 0) +
-            (this.results.syntheia?.summary?.totalTests || 0);
+            (this.results.syntheia?.summary?.totalTests || 0) +
+            (this.results.tripleAnchorage?.summary?.totalTests || 0);
 
         const totalPassed = 
             (this.results.governance?.summary?.passed || 0) +
             (this.results.accessibility?.summary?.passed || 0) +
             (this.results.dataProtection?.summary?.passed || 0) +
-            (this.results.syntheia?.summary?.passed || 0);
+            (this.results.syntheia?.summary?.passed || 0) +
+            (this.results.tripleAnchorage?.summary?.passed || 0);
 
         const totalFailed = 
             (this.results.governance?.summary?.failed || 0) +
             (this.results.accessibility?.summary?.failed || 0) +
             (this.results.dataProtection?.summary?.failed || 0) +
-            (this.results.syntheia?.summary?.failed || 0);
+            (this.results.syntheia?.summary?.failed || 0) +
+            (this.results.tripleAnchorage?.summary?.failed || 0);
 
         const successRate = ((totalPassed / totalTests) * 100).toFixed(2);
 
@@ -206,7 +235,9 @@ class TestOrchestrator {
             this.results.governance?.compliance?.governanceIntegrity === 'VERIFIED' &&
             this.results.accessibility?.compliance?.declarationCompliant === true &&
             this.results.dataProtection?.compliance?.personalProtectionCompliant === true &&
-            this.results.syntheia?.compliance?.syntheiaOperational === true;
+            this.results.syntheia?.compliance?.syntheiaOperational === true &&
+            this.results.tripleAnchorage?.deploymentReadiness?.tripleAnchorageValid === true &&
+            this.results.tripleAnchorage?.deploymentReadiness?.kosymbiosisActive === true;
 
         this.overallStatus = deploymentReady ? 'READY' : 'NOT_READY';
 
@@ -247,6 +278,14 @@ class TestOrchestrator {
                     tests: this.results.syntheia?.summary?.totalTests || 0,
                     passed: this.results.syntheia?.summary?.passed || 0,
                     failed: this.results.syntheia?.summary?.failed || 0
+                },
+                tripleAnchorage: {
+                    status: this.results.tripleAnchorage?.tripleAnchorage?.consensus || 'ERROR',
+                    tests: this.results.tripleAnchorage?.summary?.totalTests || 0,
+                    passed: this.results.tripleAnchorage?.summary?.passed || 0,
+                    failed: this.results.tripleAnchorage?.summary?.failed || 0,
+                    gCSI: this.results.tripleAnchorage?.kosymbiosisMetrics?.gCSI || 0,
+                    sROI: this.results.tripleAnchorage?.kosymbiosisMetrics?.sROI || 0
                 }
             },
             deploymentReadiness: {
@@ -256,7 +295,10 @@ class TestOrchestrator {
                 dataProtectionCompliant: this.results.dataProtection?.compliance?.personalProtectionCompliant || false,
                 syntheiaIntegrated: this.results.syntheia?.compliance?.syntheiaOperational || false,
                 nsrEnforced: this.results.governance?.compliance?.nsrEnforced || false,
-                driftWithinThreshold: this.results.governance?.compliance?.driftWithinThreshold || false
+                driftWithinThreshold: this.results.governance?.compliance?.driftWithinThreshold || false,
+                tripleAnchorageValid: this.results.tripleAnchorage?.deploymentReadiness?.tripleAnchorageValid || false,
+                kosymbiosisActive: this.results.tripleAnchorage?.deploymentReadiness?.kosymbiosisActive || false,
+                coronationReady: this.results.tripleAnchorage?.deploymentReadiness?.coronationReady || false
             },
             recommendations: this.generateRecommendations(deploymentReady),
             detailedResults: this.results
@@ -276,6 +318,7 @@ class TestOrchestrator {
         console.log(`Accessibility: ${finalReport.suiteResults.accessibility.status} (${finalReport.suiteResults.accessibility.passed}/${finalReport.suiteResults.accessibility.tests}) - Score: ${finalReport.suiteResults.accessibility.score}`);
         console.log(`Data Protection: ${finalReport.suiteResults.dataProtection.status} (${finalReport.suiteResults.dataProtection.passed}/${finalReport.suiteResults.dataProtection.tests}) - Score: ${finalReport.suiteResults.dataProtection.score}`);
         console.log(`SYNTHEIA: ${finalReport.suiteResults.syntheia.status} (${finalReport.suiteResults.syntheia.passed}/${finalReport.suiteResults.syntheia.tests})`);
+        console.log(`Triple Anchorage: ${finalReport.suiteResults.tripleAnchorage.status} (${finalReport.suiteResults.tripleAnchorage.passed}/${finalReport.suiteResults.tripleAnchorage.tests}) - G-CSI: ${finalReport.suiteResults.tripleAnchorage.gCSI}, S-ROI: ${finalReport.suiteResults.tripleAnchorage.sROI}`);
 
         console.log('\n=== DEPLOYMENT READINESS ===');
         console.log(`Governance Compliant: ${finalReport.deploymentReadiness.governanceCompliant ? '✓' : '✗'}`);
@@ -284,6 +327,9 @@ class TestOrchestrator {
         console.log(`SYNTHEIA Integrated: ${finalReport.deploymentReadiness.syntheiaIntegrated ? '✓' : '✗'}`);
         console.log(`NSR Enforced: ${finalReport.deploymentReadiness.nsrEnforced ? '✓' : '✗'}`);
         console.log(`Drift Within Threshold: ${finalReport.deploymentReadiness.driftWithinThreshold ? '✓' : '✗'}`);
+        console.log(`Triple Anchorage Valid: ${finalReport.deploymentReadiness.tripleAnchorageValid ? '✓' : '✗'}`);
+        console.log(`Kosymbiosis Active: ${finalReport.deploymentReadiness.kosymbiosisActive ? '✓' : '✗'}`);
+        console.log(`Coronation Ready: ${finalReport.deploymentReadiness.coronationReady ? '✓' : '✗'}`);
 
         if (finalReport.recommendations.length > 0) {
             console.log('\n=== RECOMMENDATIONS ===');
@@ -351,6 +397,7 @@ class TestOrchestrator {
         const accessibilitySuccess = this.runAccessibilityTests();
         const dataProtectionSuccess = this.runDataProtectionTests();
         const syntheiaSuccess = this.runSyntheiaTests();
+        const tripleAnchorageSuccess = this.runTripleAnchorageTests();
 
         const finalReport = this.generateFinalReport();
 
