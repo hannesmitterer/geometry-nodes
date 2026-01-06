@@ -205,7 +205,7 @@ app.post('/api/auth/refresh', apiLimiter, refreshToken);
  * GET /api/auth/verify
  * Verify token validity
  */
-app.get('/api/auth/verify', verifyToken, (req, res) => {
+app.get('/api/auth/verify', apiLimiter, verifyToken, (req, res) => {
     res.json({
         valid: true,
         user: req.user
