@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Backend API and WebSocket server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resonance-backend
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - WS_PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret-in-production}
+      - ALLOWED_ORIGINS=http://localhost:8080,http://localhost
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); });"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - resonance-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Frontend static file server
+  frontend:
+    image: nginx:alpine
+    container_name: resonance-frontend
+    volumes:
+      - ./:/usr/share/nginx/html:ro
+      - ./deployment/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - resonance-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  resonance-network:
+    driver: bridge
+
+volumes:
+  resonance-data:
+    driver: local
