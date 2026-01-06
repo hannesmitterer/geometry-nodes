@@ -1,0 +1,65 @@
+{
+  "server": {
+    "port": 3000,
+    "wsPort": 3001,
+    "host": "localhost",
+    "nodeEnv": "development"
+  },
+  "security": {
+    "jwt": {
+      "secret": "your-secret-key-change-in-production",
+      "expiresIn": "1h"
+    },
+    "cors": {
+      "origin": "*",
+      "credentials": true
+    },
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  "api": {
+    "baseURL": "http://localhost:3000",
+    "wsURL": "ws://localhost:3001",
+    "timeout": 30000
+  },
+  "logging": {
+    "level": "INFO",
+    "bufferSize": 100,
+    "flushInterval": 5000
+  },
+  "notifications": {
+    "browserEnabled": true,
+    "visualEnabled": true,
+    "soundEnabled": true
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": 300000,
+    "maxSize": 1000
+  },
+  "websocket": {
+    "reconnectAttempts": 5,
+    "reconnectDelay": 1000,
+    "broadcastIntervals": {
+      "sovereignty": 10000,
+      "wallet": 15000,
+      "nodes": 8000,
+      "logs": 5000
+    }
+  },
+  "ipfs": {
+    "gateway": "https://ipfs.io/ipfs/",
+    "pinning": {
+      "enabled": true,
+      "services": ["pinata", "infura"]
+    }
+  },
+  "features": {
+    "analytics": false,
+    "i18n": false,
+    "themes": false,
+    "export": false
+  }
+}
