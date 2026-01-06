@@ -12,7 +12,9 @@
     "test": "node test-modules.js",
     "test:api": "node tests/api/endpoints.test.js",
     "test:websocket": "node tests/websocket/connection.test.js",
-    "test:all": "npm test && npm run test:api && npm run test:websocket"
+    "test:performance": "artillery run tests/performance/load.yml",
+    "test:all": "npm test && npm run test:api && npm run test:websocket",
+    "dev": "npm run backend & npm run serve"
   },
   "keywords": [
     "ipfs",

@@ -1,0 +1,52 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 50
+      name: "Peak load"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+
+scenarios:
+  - name: "API endpoints"
+    weight: 60
+    flow:
+      - get:
+          url: "/api/sovereignty/status"
+      - think: 1
+      - get:
+          url: "/api/wallet/balance"
+      - think: 1
+      - get:
+          url: "/api/nodes/status"
+      - think: 2
+      - get:
+          url: "/api/logs?limit=20&offset=0"
+  
+  - name: "Health checks"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+      - think: 5
+  
+  - name: "Log submission"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/logs"
+          json:
+            entries:
+              - level: "INFO"
+                message: "Performance test log entry"
+                timestamp: "{{ $timestamp }}"
+                nodeId: "perf_test_node"
+                sessionId: "perf_test_session"
+      - think: 3
