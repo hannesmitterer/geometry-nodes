@@ -7,7 +7,12 @@
     "ipfs:add": "ipfs add -r . --ignore .git --ignore node_modules --ignore .gitignore",
     "ipfs:pin": "ipfs pin add",
     "serve": "python3 -m http.server 8080",
-    "build": "echo 'No build step required - static assets only'"
+    "build": "echo 'No build step required - static assets only'",
+    "backend": "node backend/server.js",
+    "test": "node test-modules.js",
+    "test:api": "node tests/api/endpoints.test.js",
+    "test:websocket": "node tests/websocket/connection.test.js",
+    "test:all": "npm test && npm run test:api && npm run test:websocket"
   },
   "keywords": [
     "ipfs",
@@ -18,6 +23,19 @@
   ],
   "author": "Resonance School",
   "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "artillery": "^2.0.3"
+  },
   "ipfs": {
     "gateway": "https://ipfs.io/ipfs/",
     "pinning": {
