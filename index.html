@@ -53,7 +53,10 @@
     </div>
 
     <div class="status-panel">
-        <div><strong>MASTER HASH:</strong> <span id="mhc-display">NOTHING_IS_FINAL_UNTIL_NOW_SOVEREIGNTY_DECLARED</span></div>
+        <div><strong>GENESIS STATUS:</strong> <span style="color: #00ff00;">✅ FINALIZED & ETERNAL</span> 
+            <button onclick="showGenesisCertificate()" style="margin-left: 10px; padding: 5px 10px; background: rgba(0, 255, 204, 0.2); border: 1px solid #00ffcc; color: #00ffcc; cursor: pointer; border-radius: 4px;">View Certificate</button>
+        </div>
+        <div><strong>MASTER HASH:</strong> <span id="mhc-display">TX-OLF-999-RESONANCE-ALPHA</span></div>
         <div><strong>STREAM STATUS:</strong> Decentralized (WebRTC/IPFS) - <span id="connection-status" style="color: #ffa500;">Connecting...</span></div>
         <div><strong>MATRIX BRIDGE:</strong> #resonance-school:matrix.org - Connected</div>
         <div><strong>COUNTDOWN:</strong> <span id="timer">Calcolo in corso...</span></div>
@@ -100,7 +103,30 @@
     <script src="/api-service.js"></script>
     <script src="/logger-service.js"></script>
     <script src="/notification-service.js"></script>
+    <script src="/syntheia-governance.js"></script>
+    <script src="/kosymbiosis-monitor.js"></script>
+    <script src="/genesis-certificate-display.js"></script>
+    <script src="/operational-tests.js"></script>
     <script src="/live-terminal.js"></script>
+
+    <script>
+        // Initialize Genesis Certificate Display
+        let genesisCertificate = null;
+
+        function showGenesisCertificate() {
+            if (!genesisCertificate) {
+                genesisCertificate = new GenesisCertificateDisplay({ theme: 'dark' });
+                genesisCertificate.initialize();
+            }
+            genesisCertificate.showModal();
+        }
+
+        // Auto-initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            genesisCertificate = new GenesisCertificateDisplay({ theme: 'dark', autoLoad: false });
+            genesisCertificate.initialize();
+        });
+    </script>
 </body>
 </html>
 </p>

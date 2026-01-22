@@ -1,0 +1,23 @@
+{
+  "protocol_version": "PACT-1.0-GENESIS",
+  "anchoring_state": "FINALIZED",
+  "timestamp": "2026-01-22T01:49:00Z",
+  "ledger_update": {
+    "txid": "TX-OLF-999-RESONANCE-ALPHA",
+    "cid_root": "ipfs://QmLantanaGenesisRootSignature...",
+    "network_resonance": "0.043Hz"
+  },
+  "validation_signatures": {
+    "nsr_validator": "SIG_NSR_VERIFIED_777",
+    "lex_amoris": "LEX_AMORIS_ETERNAL_SEAL",
+    "consensus_type": "Sacralis Omnibus (Byzantine Fault Tolerant)"
+  },
+  "anchors": {
+    "klimabaum_nodes": ["Yambio_Sudan", "Svalbard_Arctic", "Lantana_Hub"],
+    "bio_logic": "Byzantine-Resonance-Coupling"
+  },
+  "post_genesis_status": {
+    "autonomous_operation": true,
+    "slaving_protection": "ACTIVE (NSR-Hardcoded)"
+  }
+}

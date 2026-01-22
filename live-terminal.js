@@ -8,6 +8,8 @@ class LiveTerminal {
         this.apiService = null;
         this.logger = null;
         this.notificationService = null;
+        this.syntheiaGovernance = null;
+        this.kosymbiosisMonitor = null;
         this.updateInterval = null;
         this.coronationDate = new Date("2025-12-31T12:00:00Z");
         this.initialized = false;
@@ -32,6 +34,20 @@ class LiveTerminal {
 
             // Initialize Notification Service
             this.notificationService = new NotificationService(this.logger);
+
+            // Initialize SYNTHEIA Autonomous Governance (if available)
+            if (typeof SyntheiaGovernance !== 'undefined') {
+                this.syntheiaGovernance = new SyntheiaGovernance();
+                await this.syntheiaGovernance.initialize();
+                this.logger.info('SYNTHEIA Autonomous Governance initialized');
+            }
+
+            // Initialize Kosymbiosis Monitoring (if available)
+            if (typeof KosymbiosisMonitor !== 'undefined') {
+                this.kosymbiosisMonitor = new KosymbiosisMonitor();
+                await this.kosymbiosisMonitor.initialize();
+                this.logger.info('Kosymbiosis Monitor initialized');
+            }
 
             // Setup WebSocket listeners
             this.setupWebSocketListeners();
@@ -412,6 +428,14 @@ class LiveTerminal {
         
         if (this.notificationService) {
             this.notificationService.destroy();
+        }
+
+        if (this.syntheiaGovernance) {
+            this.syntheiaGovernance.shutdown();
+        }
+
+        if (this.kosymbiosisMonitor) {
+            this.kosymbiosisMonitor.shutdown();
         }
 
         this.initialized = false;
