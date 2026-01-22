@@ -19,6 +19,7 @@ class SyntheiaGovernance {
             monitoringInterval: config.monitoringInterval || 5000, // 5 seconds
             resonantFrequency: config.resonantFrequency || 0.043, // Hz
             autoRemediate: config.autoRemediate !== false,
+            simulationMode: config.simulationMode !== false, // Enable simulation for testing/demo
             ...config
         };
 
@@ -124,7 +125,7 @@ class SyntheiaGovernance {
                 id: nodeId,
                 status: 'MONITORING',
                 lastCheck: new Date().toISOString(),
-                coherence: Math.random() * 0.1 + 0.9, // Simulated: 0.9-1.0
+                coherence: this.config.simulationMode ? Math.random() * 0.1 + 0.9 : 1.0, // Simulated or default
                 synchronized: true
             });
         });
@@ -213,9 +214,9 @@ class SyntheiaGovernance {
      * Check Kosymbiosis stability metrics
      */
     checkKosymbiosis() {
-        // Simulate ROI measurement with slight variance
+        // Simulate ROI measurement with slight variance (only in simulation mode)
         const baseROI = this.config.resonantFrequency;
-        const variance = (Math.random() - 0.5) * 0.0002; // ±0.0001 Hz variance
+        const variance = this.config.simulationMode ? (Math.random() - 0.5) * 0.0002 : 0; // ±0.0001 Hz variance or exact
         this.state.kosymbiosis.roi = baseROI + variance;
 
         // Determine stability status
@@ -355,9 +356,9 @@ class SyntheiaGovernance {
         
         const unsyncedNodes = this.state.nodes.filter(n => !n.synchronized);
         
-        // Attempt resync
+        // Attempt resync (simulation mode uses probabilistic success, production assumes success)
         unsyncedNodes.forEach(node => {
-            node.synchronized = Math.random() > 0.3; // 70% success rate
+            node.synchronized = this.config.simulationMode ? Math.random() > 0.3 : true; // 70% success rate in simulation
             node.lastCheck = new Date().toISOString();
         });
 

@@ -17,6 +17,7 @@ class KosymbiosisMonitor {
             targetFrequency: config.targetFrequency || 0.043, // Hz
             updateInterval: config.updateInterval || 1000, // 1 second
             historySize: config.historySize || 300, // 5 minutes at 1 second intervals
+            simulationMode: config.simulationMode !== false, // Enable simulation for testing/demo
             alertThresholds: {
                 frequencyDeviation: config.frequencyDeviation || 0.001, // ±0.001 Hz
                 coherenceLow: config.coherenceLow || 0.940,
@@ -155,12 +156,19 @@ class KosymbiosisMonitor {
     }
 
     /**
+     * Helper: Check if node is synchronized
+     */
+    isNodeSynchronized(node) {
+        return node.status === 'ANCHORED' || node.status === 'ONLINE';
+    }
+
+    /**
      * Update ROI measurements
      */
     updateROI() {
-        // Simulate resonant frequency measurement with realistic variance
+        // Simulate resonant frequency measurement with realistic variance (only in simulation mode)
         const baseFrequency = this.config.targetFrequency;
-        const variance = (Math.random() - 0.5) * 0.0002; // ±0.0001 Hz
+        const variance = this.config.simulationMode ? (Math.random() - 0.5) * 0.0002 : 0; // ±0.0001 Hz or exact
         
         this.metrics.roi.current = baseFrequency + variance;
 
@@ -182,17 +190,21 @@ class KosymbiosisMonitor {
      * Update coherence measurements
      */
     updateCoherence() {
-        // Simulate coherence with slight variations
+        // Simulate coherence with slight variations (only in simulation mode)
         const targetInternal = 0.945;
         const targetDistributed = 1.0;
 
-        // Internal coherence (slight variations)
-        this.metrics.coherence.internal = Math.max(0, Math.min(1, 
-            targetInternal + (Math.random() - 0.5) * 0.01
-        ));
+        // Internal coherence (slight variations in simulation, exact otherwise)
+        if (this.config.simulationMode) {
+            this.metrics.coherence.internal = Math.max(0, Math.min(1, 
+                targetInternal + (Math.random() - 0.5) * 0.01
+            ));
+        } else {
+            this.metrics.coherence.internal = targetInternal;
+        }
 
         // Distributed coherence (based on anchor node health)
-        const healthyNodes = this.metrics.anchorNodes.filter(n => n.status === 'ANCHORED' || n.status === 'ONLINE').length;
+        const healthyNodes = this.metrics.anchorNodes.filter(n => this.isNodeSynchronized(n)).length;
         const totalNodes = this.metrics.anchorNodes.length;
         
         this.metrics.coherence.distributed = healthyNodes / totalNodes;
@@ -213,14 +225,12 @@ class KosymbiosisMonitor {
      * Update synchronization status
      */
     updateSynchronization() {
-        // Count synchronized nodes
-        const syncedCount = this.metrics.anchorNodes.filter(n => 
-            n.status === 'ANCHORED' || n.status === 'ONLINE'
-        ).length;
+        // Count synchronized nodes using helper method
+        const syncedCount = this.metrics.anchorNodes.filter(n => this.isNodeSynchronized(n)).length;
         
         this.metrics.synchronization.percentage = (syncedCount / this.metrics.anchorNodes.length) * 100;
         this.metrics.synchronization.nodes = this.metrics.anchorNodes
-            .filter(n => n.status === 'ANCHORED' || n.status === 'ONLINE')
+            .filter(n => this.isNodeSynchronized(n))
             .map(n => n.id);
 
         // Status determination
@@ -238,22 +248,26 @@ class KosymbiosisMonitor {
      */
     updateAnchorNodes() {
         this.metrics.anchorNodes.forEach(node => {
-            // Simulate node health and latency
+            // Simulate node health and latency (only in simulation mode)
             if (node.status === 'INITIALIZING') {
-                node.status = Math.random() > 0.1 ? 'ANCHORED' : 'OFFLINE';
+                node.status = this.config.simulationMode && Math.random() > 0.1 ? 'ANCHORED' : 'OFFLINE';
             }
 
-            if (node.status === 'ANCHORED' || node.status === 'ONLINE') {
-                // Simulate latency (ms)
-                node.latency = Math.floor(Math.random() * 50) + 10; // 10-60ms
+            if (this.isNodeSynchronized(node)) {
+                // Simulate latency (ms) - in production, this would come from actual measurements
+                node.latency = this.config.simulationMode ? Math.floor(Math.random() * 50) + 10 : 10; // 10-60ms or constant
                 
                 // Simulate health percentage
-                node.health = Math.max(95, Math.min(100, node.health + (Math.random() - 0.5) * 2));
+                if (this.config.simulationMode) {
+                    node.health = Math.max(95, Math.min(100, node.health + (Math.random() - 0.5) * 2));
+                } else {
+                    node.health = 100;
+                }
                 
                 // Update last sync
                 node.lastSync = new Date().toISOString();
             } else {
-                node.health = Math.max(0, node.health - 1);
+                node.health = this.config.simulationMode ? Math.max(0, node.health - 1) : 0;
                 node.latency = 0;
             }
         });
