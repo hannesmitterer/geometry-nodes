@@ -6,7 +6,7 @@
 const WebSocket = require('ws');
 
 // Test configuration
-const WS_URL = 'ws://localhost:3001';
+const WS_URL = 'ws://localhost:3000/ws';
 let testsPassed = 0;
 let testsFailed = 0;
 

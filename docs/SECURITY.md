@@ -217,8 +217,7 @@ npm outdated
 Allow only necessary ports:
 - 80 (HTTP redirect)
 - 443 (HTTPS)
-- 3000 (API - internal only)
-- 3001 (WebSocket - internal only)
+- 3000 (API and WebSocket - internal only)
 
 Block:
 - All other inbound traffic

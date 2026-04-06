@@ -9,11 +9,9 @@ services:
     container_name: resonance-backend
     ports:
       - "3000:3000"
-      - "3001:3001"
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - WS_PORT=3001
       - JWT_SECRET=${JWT_SECRET:-change-this-secret-in-production}
       - ALLOWED_ORIGINS=http://localhost:8080,http://localhost
     restart: unless-stopped

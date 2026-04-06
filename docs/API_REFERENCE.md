@@ -6,7 +6,7 @@ Complete API documentation for the Resonance School Live Monitor backend service
 
 - Production: `https://api.resonance.school`
 - Development: `http://localhost:3000`
-- WebSocket: `ws://localhost:3001`
+- WebSocket: `ws://localhost:3000/ws`
 
 ## Authentication
 
@@ -51,7 +51,7 @@ Demo credentials:
 
 ## WebSocket Events
 
-Connect to `ws://localhost:3001`
+Connect to `ws://localhost:3000/ws`
 
 **Subscribe:**
 ```json
