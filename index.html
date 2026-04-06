@@ -82,7 +82,7 @@
                 </div>
                 <!-- Mobile menu button -->
                 <div class="sm:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" id="mobile-menu-button" class="text-gray-600 hover:text-[#C5A059] focus:outline-none" aria-label="Toggle menu">
+                    <button onclick="toggleMobileMenu()" id="mobile-menu-button" class="text-gray-600 hover:text-[#C5A059] focus:outline-none" aria-label="Toggle menu" aria-expanded="false">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -390,10 +390,13 @@
         // Mobile menu toggle
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
+            const button = document.getElementById('mobile-menu-button');
             if (menu.classList.contains('hidden')) {
                 menu.classList.remove('hidden');
+                button.setAttribute('aria-expanded', 'true');
             } else {
                 menu.classList.add('hidden');
+                button.setAttribute('aria-expanded', 'false');
             }
         }
 
