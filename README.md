@@ -86,6 +86,16 @@ docker-compose up -d
 # Backend: http://localhost:3000
 ```
 
+#### GitHub Pages Deployment
+
+The application is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
+
+**Access the live application:**
+- https://hannesmitterer.github.io/geometry-nodes/
+
+**Manual deployment:**
+You can also trigger a manual deployment using the GitHub Actions workflow dispatch feature.
+
 #### IPFS Deployment
 
 ```bash
@@ -241,6 +251,17 @@ npm run serve       # Serve frontend
 See [DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md) for complete guide.
 
 ## Deployment
+
+### GitHub Pages
+
+The application is automatically deployed to GitHub Pages on every push to the `main` branch.
+
+**Live URL**: https://hannesmitterer.github.io/geometry-nodes/
+
+**Deployment Configuration:**
+- Workflow: `.github/workflows/deploy-pages.yml`
+- Trigger: Push to `main` branch or manual workflow dispatch
+- Deploys entire repository root (includes `index.html` and all assets)
 
 ### Docker
 
