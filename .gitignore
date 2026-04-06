@@ -40,6 +40,16 @@ temp/
 
 # IPFS
 .ipfs/
+.ipfs-hash
 
 # OS
 Thumbs.db
+
+# Config exports
+config/*.export.json
+
+# Docker
+.dockerignore
+
+# CI/CD artifacts
+.github/agents/

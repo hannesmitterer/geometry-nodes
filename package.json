@@ -1,13 +1,23 @@
 {
   "name": "resonance-school-live-terminal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Live Monitor Terminal for Resonance School - Decentralized sovereign application",
   "main": "index.html",
   "scripts": {
     "ipfs:add": "ipfs add -r . --ignore .git --ignore node_modules --ignore .gitignore",
     "ipfs:pin": "ipfs pin add",
     "serve": "python3 -m http.server 8080",
-    "build": "echo 'No build step required - static assets only'"
+    "build": "echo 'No build step required - static assets only'",
+    "start": "node backend/backend-mock-server.js",
+    "dev": "NODE_ENV=development node backend/backend-mock-server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "playwright test",
+    "test:api": "jest tests/test-api.spec.js",
+    "test:security": "jest tests/test-security.spec.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "keywords": [
     "ipfs",
@@ -27,5 +37,24 @@
         "infura"
       ]
     }
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "joi": "^17.11.0",
+    "compression": "^1.7.4",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@playwright/test": "^1.40.1",
+    "artillery": "^2.0.3",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "supertest": "^6.3.3"
   }
 }
