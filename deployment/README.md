@@ -51,7 +51,7 @@ After starting with Docker Compose:
 - **Frontend**: http://localhost:8080
 - **Analytics Dashboard**: http://localhost:8080/analytics/
 - **Backend API**: http://localhost:3000
-- **WebSocket**: ws://localhost:3001
+- **WebSocket**: ws://localhost:3000/ws
 - **Health Check**: http://localhost:3000/health
 
 ## IPFS Deployment

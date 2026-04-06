@@ -231,6 +231,13 @@ const wsLimiter = wsConnectionLimiter();
 
 // Handle WebSocket upgrade with rate limiting
 httpServer.on('upgrade', (req, socket, head) => {
+    // Only accept WebSocket connections on /ws path
+    if (req.url !== '/ws') {
+        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+        socket.destroy();
+        return;
+    }
+    
     // Apply rate limiting
     if (!wsLimiter(req, socket, head)) {
         return; // Connection rejected by rate limiter

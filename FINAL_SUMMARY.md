@@ -8,7 +8,7 @@ All phases of the enterprise-grade backend and analytics infrastructure have bee
 
 ### Phase 1: Backend Mock Server ✅
 - **backend/server.js** - Full Express.js server with 6 API endpoints
-- **WebSocket server** - Real-time updates on port 3001
+- **WebSocket server** - Real-time updates on port 3000/ws
 - **Data simulation** - Dynamic data mutations every 5-20 seconds
 - **Health checks** - Monitoring endpoint at /health
 
@@ -126,7 +126,7 @@ npm run test:websocket # WebSocket tests (6/6 ✅)
 - **Frontend**: http://localhost:8080
 - **Analytics**: http://localhost:8080/analytics/
 - **API**: http://localhost:3000
-- **WebSocket**: ws://localhost:3001
+- **WebSocket**: ws://localhost:3000/ws
 - **Health**: http://localhost:3000/health
 
 ## 🔒 Security Highlights
