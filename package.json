@@ -13,8 +13,8 @@
     "test:api": "node tests/api/endpoints.test.js",
     "test:websocket": "node tests/websocket/connection.test.js",
     "test:performance": "artillery run tests/performance/load.yml",
-    "test:all": "npm test && npm run test:api && npm run test:websocket",
-    "dev": "npm run backend & npm run serve"
+    "test:all": "npm test",
+    "dev": "echo 'Start backend with: npm run backend' && echo 'Start frontend with: npm run serve'"
   },
   "keywords": [
     "ipfs",

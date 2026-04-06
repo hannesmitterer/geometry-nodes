@@ -19,10 +19,11 @@ const apiLimiter = rateLimit({
     standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
     legacyHeaders: false, // Disable `X-RateLimit-*` headers
     handler: (req, res) => {
+        const retryAfter = Math.max(0, Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000));
         res.status(429).json({
             error: 'Too many requests',
             message: 'You have exceeded the rate limit. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+            retryAfter
         });
     }
 });
@@ -42,10 +43,11 @@ const strictLimiter = rateLimit({
     legacyHeaders: false,
     skipSuccessfulRequests: false,
     handler: (req, res) => {
+        const retryAfter = Math.max(0, Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000));
         res.status(429).json({
             error: 'Rate limit exceeded',
             message: 'Too many write operations. Please wait before trying again.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+            retryAfter
         });
     }
 });
@@ -65,10 +67,11 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
     skipSuccessfulRequests: true, // Don't count successful auth
     handler: (req, res) => {
+        const retryAfter = Math.max(0, Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000));
         res.status(429).json({
             error: 'Too many authentication attempts',
             message: 'Your IP has been temporarily blocked due to too many failed attempts.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+            retryAfter
         });
     }
 });
@@ -87,10 +90,11 @@ const readLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
+        const retryAfter = Math.max(0, Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000));
         res.status(429).json({
             error: 'Rate limit exceeded',
             message: 'Too many requests. Please reduce your request frequency.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+            retryAfter
         });
     }
 });

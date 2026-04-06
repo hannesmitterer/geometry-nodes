@@ -123,7 +123,7 @@ main() {
             ipfs key gen "$IPNS_KEY"
         fi
         
-        IPNS_HASH=$(ipfs name publish --key="$IPNS_KEY" "$CID" 2>&1 | grep -oP '/ipns/\K[^:]+')
+        IPNS_HASH=$(ipfs name publish --key="$IPNS_KEY" "$CID" 2>&1 | sed -n 's|.*/ipns/\([^:]*\):.*|\1|p')
         
         if [ -n "$IPNS_HASH" ]; then
             log_success "Published to IPNS: $IPNS_HASH"

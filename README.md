@@ -204,6 +204,3 @@ GitHub Actions workflow includes:
 ---
 
 **Built for the Resonance School sovereignty infrastructure**
-
-Geometry nodes - Euystacio framework synopsis system
-triple-sign-validator.js

@@ -8,17 +8,15 @@
 const express = require('express');
 const WebSocket = require('ws');
 const cors = require('cors');
-const path = require('path');
 
 // Import middleware
 const { getSecurityMiddleware, getCorsOptions, sanitizeInput, validateRequest, securityHeaders } = require('./middleware/security');
-const { apiLimiter, strictLimiter, authLimiter, readLimiter } = require('./middleware/rate-limit');
-const { verifyToken, optionalAuth, demoLogin, refreshToken } = require('./middleware/auth');
+const { apiLimiter, strictLimiter, authLimiter, readLimiter, wsConnectionLimiter } = require('./middleware/rate-limit');
+const { verifyToken, demoLogin, refreshToken } = require('./middleware/auth');
 const { validateLogSubmission, validatePagination, validateLogin } = require('./middleware/validation');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const WS_PORT = process.env.WS_PORT || 3001;
 
 // Security middleware
 app.use(getSecurityMiddleware());
@@ -193,7 +191,19 @@ app.get('/health', (req, res) => {
  * POST /api/auth/login
  * Demo login endpoint (for testing)
  */
-app.post('/api/auth/login', authLimiter, validateLogin, demoLogin);
+function loginHandler(req, res) {
+    // Disable demo login in production
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).json({
+            error: 'Not Found',
+            message: 'Demo login is disabled in production'
+        });
+    }
+    
+    return demoLogin(req, res);
+}
+
+app.post('/api/auth/login', authLimiter, validateLogin, loginHandler);
 
 /**
  * POST /api/auth/refresh
@@ -212,9 +222,24 @@ app.get('/api/auth/verify', apiLimiter, verifyToken, (req, res) => {
     });
 });
 
-// WebSocket Server
-const wss = new WebSocket.Server({ port: WS_PORT });
+// WebSocket Server with rate limiting
+const http = require('http');
+const httpServer = http.createServer(app);
+const wss = new WebSocket.Server({ noServer: true });
 const clients = new Set();
+const wsLimiter = wsConnectionLimiter();
+
+// Handle WebSocket upgrade with rate limiting
+httpServer.on('upgrade', (req, socket, head) => {
+    // Apply rate limiting
+    if (!wsLimiter(req, socket, head)) {
+        return; // Connection rejected by rate limiter
+    }
+    
+    wss.handleUpgrade(req, socket, head, (ws) => {
+        wss.emit('connection', ws, req);
+    });
+});
 
 wss.on('connection', (ws) => {
     console.log(`[WebSocket] Client connected. Total clients: ${clients.size + 1}`);
@@ -349,13 +374,13 @@ setInterval(() => {
     });
 }, 5000); // Every 5 seconds
 
-// Start HTTP server
-app.listen(PORT, () => {
+// Start HTTP server for both API and WebSocket
+httpServer.listen(PORT, () => {
     console.log('='.repeat(60));
     console.log('Resonance School Backend Mock Server');
     console.log('='.repeat(60));
     console.log(`HTTP API Server running on http://localhost:${PORT}`);
-    console.log(`WebSocket Server running on ws://localhost:${WS_PORT}`);
+    console.log(`WebSocket Server running on ws://localhost:${PORT}/ws`);
     console.log('');
     console.log('Available endpoints:');
     console.log(`  GET  http://localhost:${PORT}/api/sovereignty/status`);
@@ -377,7 +402,7 @@ app.listen(PORT, () => {
         console.log('');
     }
     
-    console.log(`WebSocket: ws://localhost:${WS_PORT}`);
+    console.log(`WebSocket: ws://localhost:${PORT}/ws`);
     console.log('='.repeat(60));
 });
 

@@ -51,13 +51,15 @@ function getSecurityMiddleware() {
  * CORS configuration for development and production
  */
 function getCorsOptions() {
+    const origin = process.env.ALLOWED_ORIGINS ? 
+        process.env.ALLOWED_ORIGINS.split(',') : 
+        '*'; // Allow all origins in development
+    
     return {
-        origin: process.env.ALLOWED_ORIGINS ? 
-            process.env.ALLOWED_ORIGINS.split(',') : 
-            '*', // Allow all origins in development
+        origin,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
+        credentials: origin !== '*',
         maxAge: 86400 // 24 hours
     };
 }

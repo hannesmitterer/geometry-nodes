@@ -5,8 +5,8 @@
 
 class AnalyticsService {
     constructor(config = {}) {
-        this.apiBaseURL = config.apiBaseURL || 'http://localhost:3000';
-        this.wsURL = config.wsURL || 'ws://localhost:3001';
+        this.apiBaseURL = config.apiBaseURL || this.getDefaultApiBaseURL();
+        this.wsURL = config.wsURL || this.getDefaultWsURL();
         this.ws = null;
         this.connected = false;
         this.paused = false;
@@ -34,6 +34,27 @@ class AnalyticsService {
         
         // Event listeners
         this.listeners = new Map();
+    }
+    
+    /**
+     * Get default API base URL from window location
+     */
+    getDefaultApiBaseURL() {
+        if (typeof window !== 'undefined' && window.location) {
+            return `${window.location.protocol}//${window.location.host}`;
+        }
+        return 'http://localhost:3000';
+    }
+    
+    /**
+     * Get default WebSocket URL from window location
+     */
+    getDefaultWsURL() {
+        if (typeof window !== 'undefined' && window.location) {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            return `${protocol}//${window.location.host}/ws`;
+        }
+        return 'ws://localhost:3000/ws';
     }
     
     /**

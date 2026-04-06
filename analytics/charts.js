@@ -392,7 +392,6 @@ function updateMetric(elementId, value) {
  */
 function updateLogsDisplay(logs) {
     const container = document.getElementById('logs-container');
-    const logsArray = Array.isArray(logs) ? logs : [logs];
     
     // Get existing logs
     const allLogs = analytics.history.logs.slice(-50).reverse();
