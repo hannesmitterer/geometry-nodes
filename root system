@@ -1,0 +1,98 @@
+
+## 1️⃣ Analisi delle cause nel “root system”
+
+| **Livello** | **Possibile causa** | **Come si manifesta** | **Indicatore di diagnostica** |
+|---|---|---|---|
+| **Hardware** | DMA‑bypass non abilitato o eFuse Latch impostato in modo errato | Latency > 1 ms, errori “DMA_TIMEOUT” | Log `DMA_INIT_FAIL`, lettura della register `EFUSE_NSRT` |
+| **Firmware** | Routine di phase‑lock sincronizzate con timer a risoluzione baja | Drift > 5 µs tra nodi, perdita di lock | `PHASE_DRIFT` > 5 µs nei report di `phase_lock_sync()` |
+| **Rete** | Vakuum‑Bridge congestionata (back‑pressure) o perdita di pacchetti | Throughput < 80 Gbps, jitter > 0.3 ms | Statistiche `tx_err`, `rx_drop` nei counter NIC |
+| **Sicurezza** | TEE non iniettata o chiavi di firma rotte | Verifiche di firma fallite, `GUARD_FAIL` | Log `TEE_INIT_ERR`, firma non verificabile |
+| **Orchestrazione** | Mancanza di cache di fiducia o TTL troppo breve | Ricalcolo continuo di hash, consumo CPU ↑ | Percentuale di richieste che attivano `full_verify=true` > 70 % |
+| **Processi esterni** | Aggiornamenti di firmware simultanei senza rolling‑update | Reti temporaneamente asimmetriche, “split‑brain” | Eventi `FW_UPDATE_START` in più zone nello stesso intervallo |
+
+**Procedure di diagnosi rapida** 
+1. `sysinfo --dump-root` → esporta lo stato di tutti i moduli. 
+2. Analizza i log con `grep -E "DMA|PHASE|GUARD|EFUSE"` → individua errori ricorrenti. 
+3. Usa `netstat -p 120G` per verificare la saturazione della Vakuum‑Bridge. 
+4. Controlla le firme dei CID con `ipfs verify <CID>`; se falliscono, il problema è nella TEE. 
+
+---
+
+## 2️⃣ Soluzioni dinamiche e auto‑evolutive
+
+### A. Auto‑tuning del DMA‑bypass
+```c
+void dma_auto_tune(void) {
+    uint32_t best_bw = 0;
+    for (int win = 64; win <= 256; win+=32) {
+        set_dma_window(win);
+        uint32_t bw = measure_dma_bandwidth();
+        if (bw > best_bw) {
+            best_bw = bw;
+            save_optimal_win(win);
+        }
+    }
+    apply_optimal_win();   // persist in NVS
+}
+```
+- **Self‑learning:** il nodo esegue il ciclo ogni 12 h; aggiorna la configurazione solo se il nuovo valore supera il precedente del > 5 %.
+
+### B. Phase‑Lock adaptive drift correction
+1. **Misura continua** di drift con un filtro Kalman. 
+2. **Aggiorna** il PLL del clock con un valore di correzione `Δf = -K·drift`. 
+3. **Propaga** la correzione via *Vakuum‑Bridge* usando un messaggio broadcast `PHASE_ADJUST`.
+
+### C. Cache di fiducia a **Merkle‑Proof** distribuita
+- Ogni nodo pubblica un **Merkle root** (`TRUST_ROOT`) contenente tutti i CID verificati nell’ultima ora. 
+- Al ricevimento di un nuovo CID, il nodo richiede solo il **Merkle proof** (`hash_path`) al peer più vicino. 
+- Verifica O(log N) anziché O(N).
+
+### D. Rolling‑update orchestrato da **Consensus‑Scheduler**
+| **Fase** | **Azioni** |
+|---|---|
+| **1. Pre‑check** | Verifica che almeno 90 % dei nodi abbiano `GUARD_OK`. |
+| **2. Staggered roll‑out** | Aggiorna il 10 % dei nodi, attendi 5 min, controlla `PHASE_LOCKED`. |
+| **3. Auto‑rollback** | Se `PHASE_DRIFT` > 2 µs, invia `ROLLBACK` al batch corrente. |
+| **4. Commit** | Dopo 5 cicli senza errore, dichiara `FW_STABLE`. |
+
+Il **Scheduler** è un micro‑servizio che gira in TEE, quindi le decisioni di rollout non possono essere forzate da un singolo nodo compromesso.
+
+### E. Auto‑healing della Vakuum‑Bridge
+1. **Monitoraggio continuo** (`tx_err`/`rx_drop`). 
+2. Se il tasso supera **0.1 %** per > 30 s, il nodo apre un canale di fallback a 40 Gbps (link secondario). 
+3. **Ricalcola** il routing table DHT per favorire i nodi con minor congestion. 
+4. Dopo il ritorno alla normalità, chiude il canale di fallback.
+
+### F. Evoluzione basata su **Reinforcement Learning (RL)**
+- **Stato:** {latency, drift, bw, tx_err}. 
+- **Azione:** {adjust DMA window, modify PLL gain, change TTL, switch bridge mode}. 
+- **Ricompensa:** `R = -α·latency - β·drift + γ·throughput`. 
+- Ogni nodo addestra localmente un piccolo **Q‑network** (≈ 1 KB) e scambia i pesi con i peer via gossip; il modello converge verso la configurazione globale ottimale.
+
+---
+
+## 3️⃣ Implementazione rapida (primo ciclo)
+
+1. **Deploy** il nuovo firmware con `dma_auto_tune()` e `phase_lock_adaptive()` su una **sandbox** (10 % dei nodi). 
+2. **Abilita** la cache Merkle (`TRUST_ROOT`) con TTL = 6 h. 
+3. **Attiva** il `Consensus‑Scheduler` con parametri di rollback. 
+4. **Avvia** il monitor RL a bassa frequenza (once per 15 min). 
+
+Dopo 24 h raccogli i KPI:
+
+| KPI | Target | Stato attuale |
+|---|---|---|
+| Latency media DMA | ≤ 0.5 ms | — |
+| Drift medio Phase‑Lock | ≤ 1 µs | — |
+| Throughput Vakuum‑Bridge | ≥ 110 Gbps | — |
+| Percentuale di verifiche cache | ≥ 80 % | — |
+
+Se gli obiettivi sono soddisfatti, si procede all’espansione al 100 % dei nodi; altrimenti si torna al ciclo di tuning.
+
+---
+
+### Conclusione
+- **Indagine sistematica** del root system individua le cause primarie (hardware, firmware, rete, sicurezza, orchestrazione). 
+- **Soluzioni auto‑evolutive** (auto‑tuning, cache Merkle, scheduler con rollback, RL) riducono al minimo il carico di verifica ripetuta, mantenendo però la **integrità** e la **robustezza** del Mycelio v2.1. 
+
+Con queste componenti il sistema evolve in modo autonomo, risparmiando energia e tempo senza compromettere la sicurezza.
